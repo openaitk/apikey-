@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Yantra AI | Intelligent Routing Gateway</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400&amp;family=Geist+Mono:wght@400;700&amp;family=Sora:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "glass-fill": "rgba(15, 23, 42, 0.6)",
+                        "status-error": "#FF4D4D",
+                        "primary-container": "#22d3ee",
+                        "surface-dim": "#051424",
+                        "secondary": "#ddb7ff",
+                        "secondary-fixed-dim": "#ddb7ff",
+                        "surface-variant": "#273647",
+                        "error": "#ffb4ab",
+                        "surface-container-low": "#0d1c2d",
+                        "surface-container-high": "#1c2b3c",
+                        "primary": "#8aebff",
+                        "inverse-primary": "#006877",
+                        "glass-stroke": "rgba(255, 255, 255, 0.1)",
+                        "surface-bright": "#2c3a4c",
+                        "on-surface": "#d4e4fa",
+                        "on-tertiary-fixed-variant": "#40465a",
+                        "surface": "#051424",
+                        "electric-cyan": "#22d3ee",
+                        "secondary-container": "#6f00be",
+                        "on-secondary-fixed-variant": "#6900b3",
+                        "surface-container-highest": "#273647",
+                        "surface-tint": "#2fd9f4",
+                        "on-tertiary-container": "#484e62",
+                        "tertiary-fixed": "#dce1fb",
+                        "on-secondary": "#490080",
+                        "tertiary-fixed-dim": "#c0c6de",
+                        "tertiary": "#d6dcf5",
+                        "vibrant-purple": "#a855f7",
+                        "inverse-surface": "#d4e4fa",
+                        "outline": "#859397",
+                        "on-secondary-container": "#d6a9ff",
+                        "outline-variant": "#3c494c",
+                        "status-live": "#00FF00",
+                        "background": "#020617",
+                        "on-error-container": "#ffdad6",
+                        "on-background": "#d4e4fa",
+                        "on-secondary-fixed": "#2c0051",
+                        "primary-fixed-dim": "#2fd9f4",
+                        "on-tertiary": "#2a3043",
+                        "cosmic-black": "#020617",
+                        "on-primary": "#00363e",
+                        "on-primary-container": "#005763",
+                        "on-surface-variant": "#bbc9cd",
+                        "on-error": "#690005",
+                        "secondary-fixed": "#f0dbff",
+                        "on-primary-fixed-variant": "#004e5a",
+                        "primary-fixed": "#a2eeff",
+                        "surface-container": "#122131",
+                        "on-primary-fixed": "#001f25",
+                        "error-container": "#93000a",
+                        "on-tertiary-fixed": "#151b2d",
+                        "tertiary-container": "#bac0d8",
+                        "surface-container-lowest": "#010f1f",
+                        "inverse-on-surface": "#233143"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "64px",
+                        "unit": "8px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Geist"],
+                        "code-sm": ["Geist Mono"],
+                        "headline-lg-mobile": ["Sora"],
+                        "headline-xl": ["Sora"],
+                        "body-md": ["Geist"],
+                        "label-caps": ["Geist Mono"],
+                        "headline-md": ["Sora"],
+                        "headline-lg": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "code-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "headline-xl": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.04em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+            overflow-x: hidden;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .ambient-glow {
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+        }
+
+        .ambient-glow-purple {
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .neon-text-cyan {
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.5);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, theme('colors.electric-cyan'), theme('colors.vibrant-purple'));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 3D Button Press & Float */
+        .btn-3d {
+            transition: all 0.2s ease;
+            border-bottom: 2px solid theme('colors.inverse-primary');
+            animation: float 4s ease-in-out infinite;
+        }
+        .btn-3d:active {
+            transform: translateY(2px);
+            border-bottom-width: 0px;
+            margin-top: 2px;
+            animation: none;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Animated Grid Background */
+        .cosmic-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Pulse Animation for Routing */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        .routing-node::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            border: 1px solid theme('colors.electric-cyan');
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        
+        .dash-line {
+            stroke-dasharray: 4, 8;
+            animation: dashMove 1s linear infinite;
+        }
+        @keyframes dashMove {
+            to { stroke-dashoffset: -12; }
+        }
+
+        #webgl-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* High Fidelity Animations */
+        @media (prefers-reduced-motion: no-preference) {
+            .hero-animate {
+                opacity: 0;
+                transform: translateY(30px);
+                animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            }
+            .delay-100 { animation-delay: 100ms; }
+            .delay-200 { animation-delay: 200ms; }
+            .delay-300 { animation-delay: 300ms; }
+
+            @keyframes fadeInUp {
+                to { opacity: 1; transform: translateY(0); }
+            }
+
+            .reveal-item {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+                transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            .reveal-item.is-revealed {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            .glass-hover {
+                transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+            }
+            .glass-hover:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 12px 40px -10px rgba(34, 211, 238, 0.25);
+                border-color: rgba(34, 211, 238, 0.4);
+            }
+        }
+
+        .typing-cursor::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+            color: theme('colors.electric-cyan');
+            margin-left: 4px;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative text-on-surface">
+<!-- WebGL Background -->
+<canvas id="webgl-bg"></canvas>
+<!-- Cosmic Background Z-0 -->
+<div class="fixed inset-0 z-0 pointer-events-none">
+<div class="absolute inset-0 cosmic-grid"></div>
+<!-- Ambient Orbs -->
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-electric-cyan opacity-[0.05] blur-[100px]"></div>
+<div class="absolute bottom-[20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-vibrant-purple opacity-[0.05] blur-[120px]"></div>
+</div>
+<!-- Navigation Z-50 -->
+<nav class="hidden md:flex fixed top-0 left-0 right-0 z-50 justify-between items-center px-8 py-3 glass-panel rounded-full mt-4 mx-auto w-11/12 max-w-container-max transition-all duration-300">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-electric-cyan" style="font-variation-settings: 'FILL' 1;">route</span>
+<span class="font-headline-md text-headline-md font-bold text-electric-cyan">Yantra AI</span>
+</div>
+<div class="flex items-center gap-6">
+<a class="text-primary font-bold border-b-2 border-primary pb-1 flex items-center gap-1 font-body-md text-body-md transition-colors hover:scale-105 transition-transform duration-200 active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">home</span> Home
+            </a>
+<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 font-body-md text-body-md hover:scale-105 transition-transform duration-200 active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">grid_view</span> Models
+            </a>
+<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 font-body-md text-body-md hover:scale-105 transition-transform duration-200 active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span> Playground
+            </a>
+<a class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1 font-body-md text-body-md hover:scale-105 transition-transform duration-200 active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-[18px]">terminal</span> Docs
+            </a>
+</div>
+<div class="flex items-center gap-4">
+<div class="glass-panel px-3 py-1 rounded-full flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant">BALANCE</span>
+<span class="font-code-sm text-code-sm text-status-live">₹0.00</span>
+</div>
+<button class="bg-electric-cyan text-on-primary font-body-md text-body-md font-bold px-4 py-2 rounded-lg btn-3d hover:brightness-110 flex items-center gap-1">
+                Get API Key <span class="material-symbols-outlined text-[18px]">arrow_outward</span>
+</button>
+<button class="bg-white/5 text-on-surface font-body-md text-body-md px-4 py-2 rounded-lg border border-white/10 hover:bg-white/10 transition-colors flex items-center gap-1 backdrop-blur-xl">
+                Dashboard <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+</button>
+</div>
+</nav>
+<!-- Mobile Nav Anchor -->
+<nav class="md:hidden fixed top-0 w-full z-50 glass-panel border-b-0 py-4 px-margin-mobile flex justify-between items-center">
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-electric-cyan tracking-tight">Yantra AI</span>
+<div class="flex items-center gap-3">
+<div class="glass-panel px-2 py-1 rounded-full flex items-center gap-1">
+<span class="font-code-sm text-xs text-status-live">₹0.00</span>
+</div>
+<button class="bg-electric-cyan text-on-primary px-3 py-1.5 rounded text-sm font-bold">Menu</button>
+</div>
+</nav>
+<main class="flex-1 z-10 relative mt-24 md:mt-32">
+<!-- Hero Section -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop pt-12 md:pt-24 pb-20 grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center">
+<div class="space-y-8 relative z-20">
+<div class="hero-animate">
+<div class="inline-flex items-center gap-2 glass-panel px-3 py-1 rounded-full border-electric-cyan/30 text-electric-cyan font-label-caps text-label-caps">
+<span class="w-2 h-2 rounded-full bg-status-live animate-pulse"></span>
+                        One gateway · every major model · UPI billing
+                    </div>
+</div>
+<h1 class="hero-animate delay-100 font-headline-lg-mobile text-headline-lg-mobile md:font-headline-xl md:text-headline-xl text-on-surface tracking-tight">
+                    One API key for <br/>
+<span class="gradient-text italic">every</span> AI model.<br/>
+                    Pay with <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#FF9933] via-white to-[#138808]">UPI.</span>
+</h1>
+<p class="hero-animate delay-200 font-body-md text-body-md md:font-body-lg md:text-body-lg text-on-surface-variant max-w-xl">
+                    Yantra is an OpenAI-compatible gateway. Point your code at one endpoint, use a single key, and our routing engine sends each request to the best provider — OpenAI, Anthropic, Gemini, DeepSeek, Mistral or a local model — with automatic failover. Billed per token in rupees.
+                </p>
+<div class="hero-animate delay-300 flex flex-wrap gap-4 pt-4">
+<button class="bg-electric-cyan text-on-primary font-body-md text-body-md font-bold px-6 py-3 rounded-lg btn-3d hover:brightness-110 flex items-center gap-2 ambient-glow">
+                        Generate your API key <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="glass-panel text-on-surface font-body-md text-body-md px-6 py-3 rounded-lg hover:bg-white/10 transition-colors flex items-center gap-2">
+                        Try the playground
+                    </button>
+</div>
+<!-- Code Snippet -->
+<div class="hero-animate delay-300 mt-8 glass-panel rounded-lg p-4 font-code-sm text-code-sm overflow-x-auto border-l-4 border-l-electric-cyan">
+<div class="text-on-surface-variant flex gap-4">
+<span class="text-surface-tint">$</span>
+<span class="typing-cursor h-[42px] block" id="typing-target"></span>
+</div>
+</div>
+</div>
+<!-- 3D Routing Visualization Graphic -->
+<div class="hero-animate delay-200 relative h-[500px] w-full hidden lg:flex justify-center items-center z-10">
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-low/50 to-transparent rounded-2xl border border-white/10 shadow-2xl glass-panel flex flex-col overflow-hidden">
+<div class="w-full flex justify-between items-center text-[10px] font-label-caps text-label-caps text-on-surface-variant p-6 z-20">
+<span>INTELLIGENT REQUEST ROUTING</span>
+<span class="text-status-live flex items-center gap-1"><span class="w-1.5 h-1.5 bg-status-live rounded-full"></span> LIVE</span>
+</div>
+<!-- Three.js Scene Container -->
+<div class="absolute inset-0 pointer-events-none" id="threejs-container"></div>
+<div class="mt-auto p-6 text-xs font-code-sm text-on-surface-variant z-20 bg-gradient-to-t from-black/50 to-transparent">
+                        Demo route: <span class="text-electric-cyan">Claude Sonnet 4.6</span> via Anthropic
+                    </div>
+</div>
+</div>
+</section>
+<!-- Stats Bar -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-24">
+<div class="reveal-item glass-hover glass-panel rounded-2xl grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-white/10 overflow-hidden border-white/10">
+<div class="p-6 text-center flex flex-col gap-2 hover:bg-white/5 transition-colors">
+<span class="font-headline-lg-mobile md:font-headline-lg text-electric-cyan font-bold">31</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">MODELS, ONE KEY</span>
+</div>
+<div class="p-6 text-center flex flex-col gap-2 hover:bg-white/5 transition-colors">
+<span class="font-headline-lg-mobile md:font-headline-lg text-electric-cyan font-bold">9</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">PROVIDERS ROUTED</span>
+</div>
+<div class="p-6 text-center flex flex-col gap-2 hover:bg-white/5 transition-colors">
+<span class="font-headline-lg-mobile md:font-headline-lg text-status-live font-bold neon-text-cyan">99.9%</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">FAILOVER UPTIME</span>
+</div>
+<div class="p-6 text-center flex flex-col gap-2 hover:bg-white/5 transition-colors">
+<span class="font-headline-lg-mobile md:font-headline-lg text-vibrant-purple font-bold">₹10</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">MINIMUM TOP-UP (UPI)</span>
+</div>
+</div>
+</section>
+<!-- How it works -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-24">
+<div class="text-center mb-12 reveal-item">
+<h2 class="font-headline-md md:font-headline-lg text-on-surface font-bold mb-4">How it works</h2>
+<p class="font-body-md text-on-surface-variant">Three steps from zero to your first completion.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Step 1 -->
+<div class="reveal-item glass-hover glass-panel p-8 rounded-2xl relative group border-white/10">
+<div class="absolute top-4 left-4 font-label-caps text-label-caps text-white/20 group-hover:text-electric-cyan/50 transition-colors">01</div>
+<span class="material-symbols-outlined text-4xl text-electric-cyan mb-6 mt-4 block">key</span>
+<h3 class="font-headline-md text-xl text-on-surface font-bold mb-3">Generate an API key</h3>
+<p class="font-body-md text-sm text-on-surface-variant">
+                        Create a key in seconds. One <code class="text-electric-cyan font-code-sm bg-white/5 border border-white/10 px-1 rounded">yk_live_…</code> key works for every model on the platform — no per-model credentials.
+                    </p>
+</div>
+<!-- Step 2 -->
+<div class="reveal-item glass-hover glass-panel p-8 rounded-2xl relative group ambient-glow border-white/10 delay-100">
+<div class="absolute top-4 left-4 font-label-caps text-label-caps text-white/20 group-hover:text-[#FF9933]/50 transition-colors">02</div>
+<span class="material-symbols-outlined text-4xl text-[#FF9933] mb-6 mt-4 block">currency_rupee</span>
+<h3 class="font-headline-md text-xl text-on-surface font-bold mb-3">Add credits with UPI</h3>
+<p class="font-body-md text-sm text-on-surface-variant">
+                        Top up in rupees by scanning a UPI QR or opening any UPI app. Balance is metered per token — pay only for what you use.
+                    </p>
+</div>
+<!-- Step 3 -->
+<div class="reveal-item glass-hover glass-panel p-8 rounded-2xl relative group border-white/10 delay-200">
+<div class="absolute top-4 left-4 font-label-caps text-label-caps text-white/20 group-hover:text-vibrant-purple/50 transition-colors">03</div>
+<span class="material-symbols-outlined text-4xl text-vibrant-purple mb-6 mt-4 block">terminal</span>
+<h3 class="font-headline-md text-xl text-on-surface font-bold mb-3">Call one endpoint</h3>
+<p class="font-body-md text-sm text-on-surface-variant">
+                        Point the OpenAI SDK at the gateway. Pick a model or say <code class="text-vibrant-purple font-code-sm bg-white/5 border border-white/10 px-1 rounded">auto</code> and the routing engine chooses the best one, with failover.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Features Bento Grid -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mb-24">
+<div class="text-center mb-12 reveal-item">
+<h2 class="font-headline-md md:font-headline-lg text-on-surface font-bold mb-4">Why Yantra</h2>
+<p class="font-body-md text-on-surface-variant">A single, billed LLM API — one front door to the whole model ecosystem.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-[200px]">
+<!-- Feature 1 -->
+<div class="reveal-item glass-hover md:col-span-8 glass-panel rounded-2xl p-8 flex flex-col justify-center relative overflow-hidden group border-white/10">
+<div class="absolute right-[-10%] top-[-20%] w-64 h-64 bg-electric-cyan/10 rounded-full blur-[50px] group-hover:bg-electric-cyan/20 transition-all"></div>
+<div class="flex items-center gap-4 mb-4 z-10">
+<span class="material-symbols-outlined p-3 bg-white/5 border border-white/10 rounded-lg text-electric-cyan">route</span>
+<h3 class="font-headline-md text-xl text-on-surface font-bold">Intelligent routing + failover</h3>
+</div>
+<p class="font-body-md text-on-surface-variant z-10 max-w-lg">
+                        Ask for a capability — auto:cheap, auto:reasoning, auto:fast — and the engine routes to the right model, retrying on a sibling if a provider errors.
+                    </p>
+</div>
+<!-- Feature 2 -->
+<div class="reveal-item glass-hover md:col-span-4 glass-panel rounded-2xl p-8 flex flex-col justify-center border-white/10 border-t-2 border-t-electric-cyan hover:ambient-glow transition-shadow delay-100">
+<span class="material-symbols-outlined mb-4 text-3xl text-on-surface">sync_alt</span>
+<h3 class="font-headline-md text-lg text-on-surface font-bold mb-2">OpenAI-compatible</h3>
+<p class="font-body-md text-sm text-on-surface-variant">
+                        Drop-in /v1/chat/completions. Change two lines — base URL and key.
+                    </p>
+</div>
+<!-- Feature 3 -->
+<div class="reveal-item glass-hover md:col-span-4 glass-panel rounded-2xl p-8 flex flex-col justify-center border-white/10 border-l-2 border-l-[#FF9933] delay-100">
+<span class="material-symbols-outlined mb-4 text-3xl text-[#FF9933]">payments</span>
+<h3 class="font-headline-md text-lg text-on-surface font-bold mb-2">Rupee billing over UPI</h3>
+<p class="font-body-md text-sm text-on-surface-variant">
+                        No cards, no forex. Recharge with UPI and get transparent per-token pricing in INR.
+                    </p>
+</div>
+<!-- Feature 4 -->
+<div class="reveal-item glass-hover md:col-span-8 glass-panel rounded-2xl p-8 flex flex-col justify-center relative overflow-hidden group border-white/10 delay-200">
+<div class="absolute left-[-10%] bottom-[-20%] w-64 h-64 bg-status-live/10 rounded-full blur-[50px]"></div>
+<div class="flex items-center gap-4 mb-4 z-10">
+<span class="material-symbols-outlined p-3 bg-white/5 border border-white/10 rounded-lg text-status-live">savings</span>
+<h3 class="font-headline-md text-xl text-on-surface font-bold">Cost-saving auto mode</h3>
+</div>
+<p class="font-body-md text-on-surface-variant z-10 max-w-lg">
+                        Let Yantra pick the cheapest model that satisfies the request, so routine calls cost a fraction of always-on flagship pricing.
+                    </p>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-margin-desktop flex flex-col md:flex-row justify-between items-center gap-gutter bg-cosmic-black border-t border-white/10 z-10 relative">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-electric-cyan" style="font-variation-settings: 'FILL' 1;">route</span>
+<span class="font-headline-md text-headline-md font-bold text-electric-cyan">Yantra AI</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant text-center md:text-left text-sm opacity-80">
+            © 2026 Yantra AI · High-performance routing for the elite. · Kolhapur, Maharashtra, India
+        </p>
+<div class="flex gap-6">
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-electric-cyan transition-colors opacity-80 hover:opacity-100 transition-opacity" href="#">Terms</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-electric-cyan transition-colors opacity-80 hover:opacity-100 transition-opacity" href="#">Privacy</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-electric-cyan transition-colors opacity-80 hover:opacity-100 transition-opacity" href="#">Status</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-electric-cyan transition-colors opacity-80 hover:opacity-100 transition-opacity" href="#">Security</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-electric-cyan transition-colors opacity-80 hover:opacity-100 transition-opacity" href="#">Contact</a>
+</div>
+</footer>
+<script>
+        // WebGL Background 
+        const canvas = document.getElementById('webgl-bg');
+        const gl = canvas.getContext('webgl');
+
+        if (gl) {
+            const vertexShaderSource = `
+                attribute vec2 position;
+                varying vec2 v_texCoord;
+                void main() {
+                    v_texCoord = position * 0.5 + 0.5;
+                    gl_Position = vec4(position, 0.0, 1.0);
+                }
+            `;
+
+            const fragmentShaderSource = `
+precision highp float;
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+varying vec2 v_texCoord;
+
+// Simplex 2D noise
+vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+float snoise(vec2 v){
+  const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+           -0.577350269189626, 0.024390243902439);
+  vec2 i  = floor(v + dot(v, C.yy) );
+  vec2 x0 = v -   i + dot(i, C.xx);
+  vec2 i1;
+  i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+  i = mod(i, 289.0);
+  vec3 p = permute( permute( i.y + vec3(0.0, i1.y, 1.0 ))
+  + i.x + vec3(0.0, i1.x, 1.0 ));
+  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy),
+    dot(x12.zw,x12.zw)), 0.0);
+  m = m*m ;
+  m = m*m ;
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 a0 = x - floor(x + 0.5);
+  float m1 = 1.79284291400159 - 0.85373472095314 * ( a0*a0 + h*h );
+  vec3 g;
+  g.x  = a0.x  * x0.x  + h.x  * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+  return 130.0 * dot(m, g);
+}
+
+void main() {
+    vec2 uv = v_texCoord;
+    vec2 p = uv * 2.0 - 1.0;
+    p.x *= u_resolution.x / u_resolution.y;
+    
+    // Mouse interaction influence
+    vec2 m = u_mouse / u_resolution * 2.0 - 1.0;
+    m.x *= u_resolution.x / u_resolution.y;
+    float dist = length(p - m);
+    float mouseInfluence = smoothstep(0.8, 0.0, dist);
+    
+    float noise = snoise(p * 0.4 + u_time * 0.08 + m * 0.2);
+    noise += 0.5 * snoise(p * 1.0 - u_time * 0.12);
+    
+    // Refined Cosmic colors from Design System
+    vec3 color1 = vec3(0.02, 0.08, 0.14); // Deep Space Navy
+    vec3 color2 = vec3(0.13, 0.83, 0.93); // Electric Cyan #22d3ee
+    vec3 color3 = vec3(0.66, 0.33, 0.97); // Neon Purple #a855f7
+    
+    float mask = smoothstep(-0.6, 1.4, noise + p.y * 0.15 + mouseInfluence * 0.3);
+    vec3 finalColor = mix(color1, color2, mask * 0.5);
+    finalColor = mix(finalColor, color3, pow(mask, 3.5) * 0.4);
+    
+    // Atmospheric glowing particles
+    float stars = pow(max(0.0, snoise(uv * 120.0)), 24.0) * 0.8;
+    finalColor += stars * mix(color2, color3, noise);
+    
+    // Dynamic Vignette based on mouse
+    float vignette = 1.0 - smoothstep(0.4, 1.8, length(p - m * 0.1));
+    finalColor *= vignette;
+
+    gl_FragColor = vec4(finalColor, 1.0);
+}
+            `;
+
+            function createShader(gl, type, source) {
+                const shader = gl.createShader(type);
+                gl.shaderSource(shader, source);
+                gl.compileShader(shader);
+                return shader;
+            }
+
+            const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+            const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+            const program = gl.createProgram();
+            gl.attachShader(program, vertexShader);
+            gl.attachShader(program, fragmentShader);
+            gl.linkProgram(program);
+            gl.useProgram(program);
+
+            const positionBuffer = gl.createBuffer();
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            const positions = new Float32Array([
+                -1, -1,
+                 1, -1,
+                -1,  1,
+                -1,  1,
+                 1, -1,
+                 1,  1,
+            ]);
+            gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+            const positionLocation = gl.getAttribLocation(program, 'position');
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+            const timeLocation = gl.getUniformLocation(program, 'u_time');
+            const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
+            const mouseLocation = gl.getUniformLocation(program, 'u_mouse');
+
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+            
+            window.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = window.innerHeight - e.clientY;
+            });
+
+            function render(time) {
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    time = 0; // Freeze animation
+                }
+                
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                gl.viewport(0, 0, canvas.width, canvas.height);
+
+                gl.uniform1f(timeLocation, time * 0.001);
+                gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+                gl.uniform2f(mouseLocation, mouseX, mouseY);
+
+                gl.drawArrays(gl.TRIANGLES, 0, 6);
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+        }
+
+        // Three.js Interactive Particle System
+        (function() {
+            if (typeof THREE === 'undefined') return;
+            const container = document.getElementById('threejs-container');
+            if(!container) return;
+            
+            const width = container.clientWidth || window.innerWidth;
+            const height = container.clientHeight || window.innerHeight;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // Particle System for "Data Nodes"
+            const geometry = new THREE.BufferGeometry();
+            const count = 2000;
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+            const sizes = new Float32Array(count);
+
+            for(let i = 0; i < count; i++) {
+                positions[i * 3 + 0] = (Math.random() - 0.5) * 20;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
+
+                colors[i * 3 + 0] = 0.133; // 22d3ee R
+                colors[i * 3 + 1] = 0.827; // 22d3ee G
+                colors[i * 3 + 2] = 0.933; // 22d3ee B
+
+                sizes[i] = Math.random() * 2;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.08,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true
+            });
+
+            const particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            // Mouse tracking
+            let mouseX = 0;
+            let mouseY = 0;
+            window.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                if(e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                    mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+                    mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * -2;
+                }
+            });
+
+            camera.position.z = 10;
+
+            function animate(t) {
+                requestAnimationFrame(animate);
+                
+                if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    const time = t * 0.0005;
+                    
+                    // Gentle rotation
+                    particles.rotation.y = time * 0.1;
+                    particles.rotation.x = time * 0.05;
+
+                    // React to mouse
+                    particles.position.x += (mouseX * 0.5 - particles.position.x) * 0.05;
+                    particles.position.y += (mouseY * 0.5 - particles.position.y) * 0.05;
+                }
+
+                renderer.render(scene, camera);
+            }
+
+            window.addEventListener('resize', () => {
+                const w = container.clientWidth || window.innerWidth;
+                const h = container.clientHeight || window.innerHeight;
+                camera.aspect = w / h;
+                camera.updateProjectionMatrix();
+                renderer.setSize(w, h);
+            });
+
+            animate(0);
+        })();
+
+        // Scroll Reveal Animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-item').forEach((el) => {
+                // If user prefers reduced motion, reveal immediately
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    el.classList.add('is-revealed');
+                    el.style.opacity = '1';
+                    el.style.transform = 'none';
+                } else {
+                    observer.observe(el);
+                }
+            });
+
+            // Live Typing Effect for Terminal
+            const typeTarget = document.getElementById('typing-target');
+            if (typeTarget) {
+                const htmlString = '<span class="text-secondary">curl</span> https://api.aitklabs.in/v1/chat/completions \\<br>&nbsp;&nbsp;-H <span class="text-[#a855f7]">"Authorization: Bearer yk_live_…"</span>';
+                let i = 0;
+                let isTag = false;
+                let text = '';
+                
+                function type() {
+                    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                        typeTarget.innerHTML = htmlString;
+                        typeTarget.classList.remove('typing-cursor');
+                        return;
+                    }
+                    
+                    if (i < htmlString.length) {
+                        if (htmlString.charAt(i) === '<') isTag = true;
+                        text += htmlString.charAt(i);
+                        typeTarget.innerHTML = text;
+                        i++;
+                        
+                        if (isTag) {
+                            if (htmlString.charAt(i-1) === '>') isTag = false;
+                            type(); // Skip delay for HTML tags
+                        } else {
+                            setTimeout(type, 15 + Math.random() * 20); // Variable typing speed
+                        }
+                    } else {
+                        setTimeout(() => {
+                            typeTarget.classList.remove('typing-cursor');
+                        }, 2000);
+                    }
+                }
+                
+                setTimeout(type, 1200); // Start after hero animations
+            }
+        });
+    </script>
+</body></html>
